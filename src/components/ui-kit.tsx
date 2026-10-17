@@ -25,7 +25,7 @@ export function Reveal({ children, delay = 0, className = "" }: { children: Reac
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) { setVisible(true); io.disconnect(); }
+      if (e?.isIntersecting) { setVisible(true); io.disconnect(); }
     }, { threshold: 0.15 });
     io.observe(el);
     return () => io.disconnect();
