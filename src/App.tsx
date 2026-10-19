@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Link, Outlet, isRouteErrorResponse, useRevalidator, useRouteError } from "react-router";
 import { useEffect, useState } from "react";
 
-import { reportLovableError } from "./lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 
 export function NotFoundComponent() {
@@ -32,7 +31,6 @@ export function ErrorComponent() {
   const revalidator = useRevalidator();
   useEffect(() => {
     console.error(error);
-    reportLovableError(error, { boundary: "root_error_element" });
   }, [error]);
 
   if (isRouteErrorResponse(error) && error.status === 404) return <NotFoundComponent />;
