@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router";
 import { useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { btnPrimary, Logo } from "@/components/ui-kit";
@@ -21,7 +21,7 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
     setLoading(false);
     if (error) return setError(error.message);
     if (!data.session) return setError("請到信箱確認帳號 · Check your email to confirm.");
-    navigate({ to: "/app", replace: true });
+    navigate("/app", { replace: true });
   }
 
   const input = "w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30";
