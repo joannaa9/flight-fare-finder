@@ -1,8 +1,16 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BellRing, Check, Loader2 } from "lucide-react";
+import { BellRing, Check, CreditCard, Loader2 } from "lucide-react";
 import { btnGhost, btnPrimary } from "@/components/ui-kit";
-import { listSubscriptions, subscribe, type PlanName, type Subscription } from "@/lib/flight-api";
+import {
+  cancelSubscription,
+  listSubscriptions,
+  statusOf,
+  subscribe,
+  type PlanName,
+  type Subscription,
+  type SubscriptionStatus,
+} from "@/lib/flight-api";
 
 const PLANS: { name: PlanName; route: string; title: string; subtitle: string; hint: number }[] = [
   { name: "tokyo", route: "TPE-TYO", title: "台北 ✈ 東京", subtitle: "Taipei → Tokyo", hint: 7800 },
@@ -10,6 +18,18 @@ const PLANS: { name: PlanName; route: string; title: string; subtitle: string; h
 ];
 
 const twd = (n: number) => `NT$${n.toLocaleString("en-US")}`;
+
+// Paid rows (active, or cancelled but still inside the paid period) update in place;
+// everything else goes through the ECPay cashier.
+const isPaid = (status: SubscriptionStatus | undefined) =>
+  status === "active" || status === "cancelled";
+
+const BADGE: Record<SubscriptionStatus, { label: string; className: string }> = {
+  active: { label: "已訂閱 · Active", className: "bg-primary/15 text-primary" },
+  pending_payment: { label: "未完成付款 · Unpaid", className: "bg-amber-500/15 text-amber-400" },
+  cancelled: { label: "已取消 · Cancelled", className: "bg-muted text-muted-foreground" },
+  expired: { label: "已結束 · Ended", className: "bg-muted text-muted-foreground" },
+};
 
 export function PlanCards({ email }: { email: string }) {
   const { data, isLoading, error } = useQuery({
@@ -21,7 +41,8 @@ export function PlanCards({ email }: { email: string }) {
     <section className="mt-8">
       <h2 className="text-xl font-semibold">選擇要追蹤的航線 · Pick a route</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        每 30 分鐘檢查一次下個月的最低票價，低於你的目標價就寄 email 給你。
+        每 30 分鐘檢查一次下個月的最低票價，低於你的目標價就寄 email
+        給你。月訂閱制，以綠界信用卡定期定額付款，可隨時取消。
       </p>
       {error && (
         <p className="mt-4 text-sm text-destructive">讀取訂閱失敗：{(error as Error).message}</p>
@@ -55,18 +76,27 @@ function PlanCard({
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
   const [price, setPrice] = useState("");
+  const status = subscription && statusOf(subscription);
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ["subscriptions", email] });
+
   const mutation = useMutation({
     mutationFn: (target: number) => subscribe(email, plan.name, target),
-    onSuccess: () => {
+    onSuccess: (result) => {
+      if (result === "checkout") return; // the page is now on its way to ECPay
       setEditing(false);
       setPrice("");
-      return queryClient.invalidateQueries({ queryKey: ["subscriptions", email] });
+      return refresh();
     },
+  });
+  const cancel = useMutation({
+    mutationFn: () => cancelSubscription(email, plan.route),
+    onSuccess: refresh,
   });
 
   const target = Number(price);
   const valid = price !== "" && Number.isFinite(target) && target > 0;
-  const showForm = !subscription || editing;
+  const showForm = !subscription || status === "expired" || editing;
+  const until = subscription?.current_period_end_date;
 
   return (
     <div className="rounded-2xl border border-border bg-card/70 p-6">
@@ -75,9 +105,12 @@ function PlanCard({
           <h3 className="text-lg font-semibold">{plan.title}</h3>
           <p className="text-sm text-muted-foreground">{plan.subtitle}</p>
         </div>
-        {subscription && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-primary">
-            <Check className="h-3 w-3" /> 已訂閱 · Subscribed
+        {status && (
+          <span
+            className={`inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${BADGE[status].className}`}
+          >
+            {status === "active" && <Check className="h-3 w-3" />}
+            {BADGE[status].label}
           </span>
         )}
       </div>
@@ -86,11 +119,28 @@ function PlanCard({
         <Loader2 className="mt-6 h-5 w-5 animate-spin text-muted-foreground" />
       ) : (
         <>
-          {subscription && (
+          {subscription && status !== "expired" && (
             <p className="mt-4 text-sm">
               目標價 Target：<span className="font-semibold">{twd(subscription.target_price)}</span>
             </p>
           )}
+          {status === "active" && until && (
+            <p className="mt-1 text-xs text-muted-foreground">本期有效至 {until}，到期自動續訂</p>
+          )}
+          {status === "cancelled" && until && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              有效至 {until}（這天之前仍會寄降價通知）
+            </p>
+          )}
+          {status === "pending_payment" && (
+            <p className="mt-1 text-xs text-muted-foreground">完成付款後才會開始寄送降價通知。</p>
+          )}
+          {status === "expired" && (
+            <p className="mt-4 text-sm text-muted-foreground">
+              訂閱已結束，重新訂閱即可再收到通知。
+            </p>
+          )}
+
           {showForm ? (
             <form
               className="mt-4 space-y-3"
@@ -121,10 +171,16 @@ function PlanCard({
                 >
                   {mutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
+                  ) : isPaid(status) ? (
                     <BellRing className="h-4 w-4" />
+                  ) : (
+                    <CreditCard className="h-4 w-4" />
                   )}
-                  {subscription ? "儲存目標價" : "開始追蹤"}
+                  {isPaid(status)
+                    ? "儲存目標價"
+                    : status === "expired"
+                      ? "重新訂閱並付款"
+                      : "訂閱並付款 · Subscribe"}
                 </button>
                 {editing && (
                   <button type="button" onClick={() => setEditing(false)} className={btnGhost}>
@@ -132,14 +188,50 @@ function PlanCard({
                   </button>
                 )}
               </div>
-              {mutation.error && (
-                <p className="text-sm text-destructive">{(mutation.error as Error).message}</p>
-              )}
             </form>
           ) : (
-            <button onClick={() => setEditing(true)} className={`${btnGhost} mt-4`}>
-              更新目標價 · Update
-            </button>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {status === "pending_payment" && subscription && (
+                <button
+                  onClick={() => mutation.mutate(subscription.target_price)}
+                  disabled={mutation.isPending}
+                  className={btnPrimary}
+                >
+                  {mutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <CreditCard className="h-4 w-4" />
+                  )}
+                  完成付款 · Pay
+                </button>
+              )}
+              <button onClick={() => setEditing(true)} className={btnGhost}>
+                更新目標價 · Update
+              </button>
+              {status === "active" && (
+                <button
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        `確定要取消 ${plan.title} 的訂閱嗎？已付費的這一期仍會繼續通知到期滿。`,
+                      )
+                    ) {
+                      cancel.mutate();
+                    }
+                  }}
+                  disabled={cancel.isPending}
+                  className={btnGhost.replace("text-foreground", "text-destructive")}
+                >
+                  {cancel.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  取消訂閱
+                </button>
+              )}
+            </div>
+          )}
+          {(mutation.error || cancel.error) && (
+            <p className="mt-2 text-sm text-destructive">
+              {((mutation.error ?? cancel.error) as Error).message}
+            </p>
           )}
         </>
       )}
