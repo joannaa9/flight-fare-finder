@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { btnGhost, Logo } from "@/components/ui-kit";
+import { PlanCards } from "@/components/PlanCards";
 import { usePageMeta } from "@/lib/use-page-meta";
 import { useAuthUser } from "./RequireAuth";
 
@@ -27,11 +28,10 @@ export function AppHome() {
           <LogOut className="mr-2 h-4 w-4" /> Sign out / 登出
         </button>
       </header>
-      <main className="mx-auto max-w-3xl px-6 pt-20">
-        <div className="animate-fade-up rounded-2xl border border-border bg-card/70 p-10">
+      <main className="mx-auto max-w-3xl px-6 pb-20 pt-12">
+        <div className="animate-fade-up">
           <h1 className="text-3xl font-bold tracking-tight">Hi {user.email}</h1>
-          <p className="mt-4 text-lg">你的航線追蹤儀表板即將上線 — 下一個里程碑會加上訂閱航線的功能。</p>
-          <p className="mt-2 text-muted-foreground">Your dashboard is coming soon. Route-subscription will be added in the next milestone.</p>
+          {user.email && <PlanCards email={user.email} />}
         </div>
       </main>
     </div>
