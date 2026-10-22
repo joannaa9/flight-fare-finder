@@ -25,8 +25,8 @@ const isPaid = (status: SubscriptionStatus | undefined) =>
   status === "active" || status === "cancelled";
 
 const BADGE: Record<SubscriptionStatus, { label: string; className: string }> = {
-  active: { label: "已訂閱 · Active", className: "bg-primary/15 text-primary" },
-  pending_payment: { label: "未完成付款 · Unpaid", className: "bg-amber-500/15 text-amber-400" },
+  active: { label: "已訂閱 · Active", className: "border border-primary/40 bg-primary/10 text-primary-glow" },
+  pending_payment: { label: "未完成付款 · Unpaid", className: "border border-amber-400/30 bg-amber-500/10 text-amber-300" },
   cancelled: { label: "已取消 · Cancelled", className: "bg-muted text-muted-foreground" },
   expired: { label: "已結束 · Ended", className: "bg-muted text-muted-foreground" },
 };
@@ -39,7 +39,7 @@ export function PlanCards({ email }: { email: string }) {
 
   return (
     <section className="mt-8">
-      <h2 className="text-xl font-semibold">選擇要追蹤的航線 · Pick a route</h2>
+      <h2 className="text-xl font-medium tracking-tight">選擇要追蹤的航線 · Pick a route</h2>
       <p className="mt-1 text-sm text-muted-foreground">
         每 30 分鐘檢查一次下個月的最低票價，低於你的目標價就寄 email
         給你。月訂閱制，以綠界信用卡定期定額付款，可隨時取消。
@@ -105,15 +105,15 @@ function PlanCard({
   const until = subscription?.current_period_end_date;
 
   return (
-    <div className="rounded-2xl border border-border bg-card/70 p-6">
+    <div className="panel rounded-md border border-border p-6">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h3 className="text-lg font-semibold">{plan.title}</h3>
-          <p className="text-sm text-muted-foreground">{plan.subtitle}</p>
+          <h3 className="text-lg font-medium">{plan.title}</h3>
+          <p className="eyebrow mt-1 text-muted-foreground">{plan.subtitle}</p>
         </div>
         {status && (
           <span
-            className={`inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${BADGE[status].className}`}
+            className={`inline-flex shrink-0 items-center gap-1 rounded-sm px-2.5 py-1 text-xs font-medium ${BADGE[status].className}`}
           >
             {status === "active" && <Check className="h-3 w-3" />}
             {BADGE[status].label}
@@ -165,7 +165,7 @@ function PlanCard({
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder={String(plan.hint)}
-                  className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                  className="mt-1 w-full rounded-sm border border-input bg-background/70 px-3 py-2 text-sm outline-none focus:border-ring focus:ring-1 focus:ring-ring/40"
                 />
               </label>
               <p className="text-xs text-muted-foreground">參考：目前最低約 {twd(plan.hint)}</p>
@@ -223,7 +223,7 @@ function PlanCard({
                 </button>
               )}
               {status === "active" && confirmingCancel && (
-                <div className="w-full rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm">
+                <div className="w-full rounded-sm border border-destructive/40 bg-destructive/10 p-3 text-sm">
                   <p>
                     確定要取消 {plan.title} 的訂閱嗎？之後不會再扣款，已付費的這一期
                     {until ? `（至 ${until}）` : ""}仍會繼續通知。

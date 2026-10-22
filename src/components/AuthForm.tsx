@@ -24,14 +24,14 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
     navigate("/app", { replace: true });
   }
 
-  const input = "w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30";
+  const input = "w-full rounded-sm border border-input bg-background/70 px-3 py-2.5 text-sm outline-none focus:border-ring focus:ring-1 focus:ring-ring/40";
 
   return (
     <div className="grid min-h-screen place-items-center bg-hero px-6">
       <div className="animate-fade-up w-full max-w-sm">
         <div className="mb-8 flex justify-center"><Logo /></div>
-        <form onSubmit={onSubmit} className="space-y-4 rounded-2xl border border-border bg-card/80 p-7">
-          <h1 className="text-xl font-semibold">{isUp ? "建立帳號 · Sign up" : "登入 · Sign in"}</h1>
+        <form onSubmit={onSubmit} className="panel space-y-4 rounded-md border border-border p-7">
+          <h1 className="text-xl font-medium tracking-tight">{isUp ? "建立帳號 · Sign up" : "登入 · Sign in"}</h1>
           <input className={input} type="email" required placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
           <input className={input} type="password" required minLength={6} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={isUp ? "new-password" : "current-password"} />
           {error && <p className="text-sm text-destructive">{error}</p>}

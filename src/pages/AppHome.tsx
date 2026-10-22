@@ -43,14 +43,14 @@ export function AppHome() {
       </header>
       <main className="mx-auto max-w-3xl px-6 pb-20 pt-12">
         <div className="animate-fade-up">
-          <h1 className="text-3xl font-bold tracking-tight">Hi {user.email}</h1>
+          <h1 className="text-3xl font-medium tracking-tight">Hi {user.email}</h1>
           {purchase === "success" && (
-            <p className="mt-4 rounded-lg border border-primary/40 bg-primary/10 px-4 py-3 text-sm">
+            <p className="mt-4 rounded-sm border border-primary/40 bg-primary/10 px-4 py-3 text-sm">
               付款完成，感謝訂閱！訂閱狀態會在幾秒內更新為「已訂閱」，歡迎信也會寄到你的信箱。
             </p>
           )}
           {purchase === "failed" && (
-            <p className="mt-4 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm">
+            <p className="mt-4 rounded-sm border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm">
               付款沒有成功，沒有扣款。可以按「完成付款」再試一次。
             </p>
           )}

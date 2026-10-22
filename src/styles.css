@@ -34,30 +34,40 @@
 }
 
 :root {
-  --radius: 0.75rem;
-  --background: oklch(0.14 0.01 285);
-  --foreground: oklch(0.97 0.005 285);
-  --card: oklch(0.18 0.015 285);
-  --card-foreground: oklch(0.97 0.005 285);
-  --popover: oklch(0.18 0.015 285);
-  --popover-foreground: oklch(0.97 0.005 285);
-  --primary: oklch(0.62 0.22 293);
-  --primary-foreground: oklch(0.99 0 0);
-  --primary-glow: oklch(0.72 0.18 310);
-  --secondary: oklch(0.22 0.02 285);
-  --secondary-foreground: oklch(0.95 0.005 285);
-  --muted: oklch(0.22 0.02 285);
-  --muted-foreground: oklch(0.68 0.02 285);
-  --accent: oklch(0.26 0.04 293);
-  --accent-foreground: oklch(0.97 0.005 285);
-  --destructive: oklch(0.65 0.2 25);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(1 0 0 / 9%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.62 0.22 293);
-  --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-glow));
-  --gradient-hero: radial-gradient(ellipse 80% 60% at 50% 0%, oklch(0.62 0.22 293 / 28%), transparent 70%);
-  --shadow-glow: 0 10px 40px -10px oklch(0.62 0.22 293 / 55%);
+  /* Brushed-steel kitchen: warm charcoal room, satin stainless panels, low warm light. */
+  --radius: 0.25rem;
+  --background: oklch(0.19 0.006 70);
+  --foreground: oklch(0.93 0.006 80);
+  --card: oklch(0.25 0.006 70);
+  --card-foreground: oklch(0.93 0.006 80);
+  --popover: oklch(0.24 0.006 70);
+  --popover-foreground: oklch(0.93 0.006 80);
+  --primary: oklch(0.8 0.012 75);
+  --primary-foreground: oklch(0.17 0.006 70);
+  --primary-glow: oklch(0.9 0.014 80);
+  --secondary: oklch(0.28 0.006 70);
+  --secondary-foreground: oklch(0.93 0.006 80);
+  --muted: oklch(0.28 0.006 70);
+  --muted-foreground: oklch(0.68 0.01 75);
+  --accent: oklch(0.31 0.007 70);
+  --accent-foreground: oklch(0.95 0.006 80);
+  --destructive: oklch(0.66 0.13 35);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.9 0.01 80 / 12%);
+  --input: oklch(0.9 0.01 80 / 16%);
+  --ring: oklch(0.8 0.012 75);
+  /* Satin steel: a soft vertical sheen like light grazing a panel. */
+  --gradient-primary: linear-gradient(100deg,
+    oklch(0.68 0.01 75) 0%, oklch(0.9 0.012 80) 38%, oklch(0.76 0.01 75) 62%, oklch(0.62 0.01 70) 100%);
+  /* Overhead warm light falling onto the room. */
+  --gradient-hero:
+    radial-gradient(ellipse 70% 55% at 30% 0%, oklch(0.42 0.012 75 / 55%), transparent 70%),
+    linear-gradient(180deg, oklch(0.23 0.007 70), oklch(0.17 0.006 70) 75%);
+  --gradient-panel: linear-gradient(105deg,
+    oklch(0.3 0.006 75) 0%, oklch(0.36 0.008 78) 30%, oklch(0.27 0.006 72) 58%, oklch(0.24 0.006 70) 100%);
+  --brushed: repeating-linear-gradient(180deg, oklch(1 0 0 / 2.5%) 0 1px, transparent 1px 3px);
+  --shadow-glow: inset 0 1px 0 oklch(1 0 0 / 45%), 0 10px 30px -12px oklch(0.85 0.02 80 / 35%);
+  --shadow-panel: inset 0 1px 0 oklch(1 0 0 / 7%), 0 24px 48px -28px oklch(0 0 0 / 80%);
 }
 
 @layer base {
@@ -68,9 +78,16 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
+  ::selection { background: oklch(0.8 0.012 75 / 35%); }
 }
 
-@utility bg-hero { background-image: var(--gradient-hero); }
+/* Room backdrop: warm light from above plus faint full-height cabinet seams. */
+@utility bg-hero {
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0 159px, oklch(0 0 0 / 22%) 159px 160px),
+    var(--gradient-hero);
+  background-attachment: fixed;
+}
 @utility bg-gradient-primary { background-image: var(--gradient-primary); }
 @utility shadow-glow { box-shadow: var(--shadow-glow); }
 @utility text-gradient {
@@ -78,6 +95,17 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+/* Brushed stainless panel for cards. */
+@utility panel {
+  background-image: var(--brushed), var(--gradient-panel);
+  box-shadow: var(--shadow-panel);
+}
+/* Small engraved label, like a spec plate. */
+@utility eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
 }
 
 @keyframes fade-up {

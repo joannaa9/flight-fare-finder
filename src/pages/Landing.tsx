@@ -23,13 +23,13 @@ export function Landing() {
 
       <main>
         <section className="mx-auto max-w-4xl px-6 pb-24 pt-20 text-center sm:pt-28">
-          <p className="animate-fade-up mb-6 inline-block rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground">
+          <p className="animate-fade-up eyebrow mb-8 inline-block border-y border-border px-4 py-1.5 text-muted-foreground">
             台北出發 · TPE → NRT / ICN
           </p>
-          <h1 className="animate-fade-up text-5xl font-bold tracking-tight sm:text-7xl" style={{ animationDelay: "80ms" }}>
+          <h1 className="animate-fade-up text-5xl font-semibold tracking-tight sm:text-7xl" style={{ animationDelay: "80ms" }}>
             <span className="text-gradient">Flight Price Notifier</span>
           </h1>
-          <p className="animate-fade-up mt-6 text-xl font-medium sm:text-2xl" style={{ animationDelay: "160ms" }}>
+          <p className="animate-fade-up mt-6 text-xl font-light sm:text-2xl" style={{ animationDelay: "160ms" }}>
             設定航線與目標價，機票降價就通知你
           </p>
           <p className="animate-fade-up mt-3 text-muted-foreground" style={{ animationDelay: "240ms" }}>
@@ -43,12 +43,12 @@ export function Landing() {
         <section className="mx-auto grid max-w-6xl gap-6 px-6 pb-28 md:grid-cols-3">
           {features.map((f, i) => (
             <Reveal key={f.en} delay={i * 120}>
-              <div className="h-full rounded-2xl border border-border bg-card/70 p-7 transition hover:border-primary/50">
-                <div className="mb-5 grid h-11 w-11 place-items-center rounded-xl bg-accent text-primary-glow">
+              <div className="panel h-full rounded-md border border-border p-7 transition hover:border-primary/40">
+                <div className="mb-5 grid h-11 w-11 place-items-center rounded-sm border border-border bg-background/60 text-primary-glow">
                   <f.icon className="h-5 w-5" />
                 </div>
-                <h3 className="text-lg font-semibold">{f.title}</h3>
-                <p className="text-sm text-muted-foreground">{f.en}</p>
+                <h3 className="text-lg font-medium">{f.title}</h3>
+                <p className="eyebrow mt-1 text-muted-foreground">{f.en}</p>
                 <p className="mt-4 text-sm leading-relaxed text-foreground/80">{f.body}</p>
               </div>
             </Reveal>
@@ -56,7 +56,7 @@ export function Landing() {
         </section>
       </main>
 
-      <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
+      <footer className="eyebrow border-t border-border py-8 text-center text-muted-foreground">
         © 2026 Flight Price Notifier
       </footer>
     </div>

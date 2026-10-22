@@ -3,14 +3,14 @@ import { Plane } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 export const btnPrimary =
-  "inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-glow transition hover:opacity-90 disabled:opacity-60";
+  "inline-flex items-center justify-center gap-2 rounded-sm bg-gradient-primary px-4 py-2 text-sm font-semibold tracking-wide text-primary-foreground shadow-glow transition hover:brightness-110 disabled:opacity-60";
 export const btnGhost =
-  "inline-flex items-center justify-center rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent";
+  "inline-flex items-center justify-center rounded-sm border border-border bg-card/40 px-4 py-2 text-sm font-medium tracking-wide text-foreground transition hover:border-primary/40 hover:bg-accent";
 
 export function Logo() {
   return (
-    <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
-      <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-primary text-primary-foreground">
+    <Link to="/" className="flex items-center gap-3 font-medium tracking-wide">
+      <span className="grid h-8 w-8 place-items-center rounded-sm bg-gradient-primary text-primary-foreground shadow-glow">
         <Plane className="h-4 w-4" />
       </span>
       <span className="hidden sm:inline">Flight Price Notifier</span>
