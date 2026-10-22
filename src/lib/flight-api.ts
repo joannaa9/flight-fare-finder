@@ -3,7 +3,7 @@ const API_URL =
   (import.meta.env["VITE_FLIGHT_API_URL"] as string | undefined) ??
   "https://mzs84e84hg.execute-api.us-east-1.amazonaws.com";
 
-export type PlanName = "tokyo" | "seoul";
+export type PlanName = "tokyo" | "seoul" | "london";
 
 // Rows from M1 have no status yet; treat them like an unpaid subscription.
 export type SubscriptionStatus = "pending_payment" | "active" | "cancelled" | "expired";

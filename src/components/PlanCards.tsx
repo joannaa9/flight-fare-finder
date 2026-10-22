@@ -15,6 +15,7 @@ import {
 const PLANS: { name: PlanName; route: string; title: string; subtitle: string; hint: number }[] = [
   { name: "tokyo", route: "TPE-TYO", title: "台北 ✈ 東京", subtitle: "Taipei → Tokyo", hint: 7800 },
   { name: "seoul", route: "TPE-SEL", title: "台北 ✈ 首爾", subtitle: "Taipei → Seoul", hint: 6800 },
+  { name: "london", route: "TPE-LON", title: "台北 ✈ 倫敦", subtitle: "Taipei → London", hint: 28000 },
 ];
 
 const twd = (n: number) => `NT$${n.toLocaleString("en-US")}`;
