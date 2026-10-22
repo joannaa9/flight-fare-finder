@@ -105,7 +105,7 @@ function PlanCard({
   const until = subscription?.current_period_end_date;
 
   return (
-    <div className="panel rounded-md border border-border p-6">
+    <div className="panel rounded-2xl border border-border p-6">
       <div className="flex items-start justify-between gap-2">
         <div>
           <h3 className="text-lg font-medium">{plan.title}</h3>

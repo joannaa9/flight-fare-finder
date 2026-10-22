@@ -43,7 +43,7 @@ export function Landing() {
         <section className="mx-auto grid max-w-6xl gap-6 px-6 pb-28 md:grid-cols-3">
           {features.map((f, i) => (
             <Reveal key={f.en} delay={i * 120}>
-              <div className="panel h-full rounded-md border border-border p-7 transition hover:border-primary/40">
+              <div className="panel h-full rounded-2xl border border-border p-7 transition hover:border-primary/40">
                 <div className="mb-5 grid h-11 w-11 place-items-center rounded-sm border border-border bg-background/60 text-primary-glow">
                   <f.icon className="h-5 w-5" />
                 </div>
