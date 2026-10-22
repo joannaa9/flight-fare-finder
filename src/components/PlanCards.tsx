@@ -76,6 +76,9 @@ function PlanCard({
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
   const [price, setPrice] = useState("");
+  // Inline confirm: in-app browsers (LINE, Facebook, embedded webviews) make
+  // window.confirm() return false without showing anything.
+  const [confirmingCancel, setConfirmingCancel] = useState(false);
   const status = subscription && statusOf(subscription);
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["subscriptions", email] });
 
@@ -90,7 +93,10 @@ function PlanCard({
   });
   const cancel = useMutation({
     mutationFn: () => cancelSubscription(email, plan.route),
-    onSuccess: refresh,
+    onSuccess: () => {
+      setConfirmingCancel(false);
+      return refresh();
+    },
   });
 
   const target = Number(price);
@@ -208,23 +214,38 @@ function PlanCard({
               <button onClick={() => setEditing(true)} className={btnGhost}>
                 更新目標價 · Update
               </button>
-              {status === "active" && (
+              {status === "active" && !confirmingCancel && (
                 <button
-                  onClick={() => {
-                    if (
-                      window.confirm(
-                        `確定要取消 ${plan.title} 的訂閱嗎？已付費的這一期仍會繼續通知到期滿。`,
-                      )
-                    ) {
-                      cancel.mutate();
-                    }
-                  }}
-                  disabled={cancel.isPending}
+                  onClick={() => setConfirmingCancel(true)}
                   className={btnGhost.replace("text-foreground", "text-destructive")}
                 >
-                  {cancel.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   取消訂閱
                 </button>
+              )}
+              {status === "active" && confirmingCancel && (
+                <div className="w-full rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm">
+                  <p>
+                    確定要取消 {plan.title} 的訂閱嗎？之後不會再扣款，已付費的這一期
+                    {until ? `（至 ${until}）` : ""}仍會繼續通知。
+                  </p>
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      onClick={() => cancel.mutate()}
+                      disabled={cancel.isPending}
+                      className={btnGhost.replace("text-foreground", "text-destructive")}
+                    >
+                      {cancel.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      確定取消
+                    </button>
+                    <button
+                      onClick={() => setConfirmingCancel(false)}
+                      disabled={cancel.isPending}
+                      className={btnGhost}
+                    >
+                      返回
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
           )}
